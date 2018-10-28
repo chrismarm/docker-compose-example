@@ -13,17 +13,30 @@ services:
       - db
     networks: 
       - net3
+    volumes:
+      - type: volume
+        source: mydata
+        target: /data
+        volume:
+          nocopy: true
+      - type: bind
+        source: ./static
+        target: /opt/app/static
   db:
     image: mongo:3.0.15
     container_name: mongo_db
     volumes:
-      - ./db:/data/db
+      - "/var/run/postgres/postgres.sock:/var/run/postgres/postgres.sock"
+      - "dbdata:/var/lib/postgresql/data"
     networks:
       net3:
         aliases:
           - "mongo_db"
         ipv4_address: 172.16.238.10
         ipv6_address: 2001:3984:3989::10
+volumes:
+  mydata:
+  dbdata:
 networks:
   net3:
     driver: bridge
